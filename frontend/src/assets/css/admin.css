@@ -1,0 +1,198 @@
+body{
+    background-color: #F5F5F5 !important;
+}
+
+.header__logo{
+    width: 45%;
+}
+
+.header__navigation{
+    width: 100%;
+}
+
+.header__navigation-list {
+    display: flex;
+    justify-content: space-around;
+    list-style-type: none;
+    width: 100%;
+    margin-left: -100px;
+}
+
+.grid__column-10{
+    /* background-color: var(--white-color); */
+}
+
+/* header__utility */
+
+
+.header__utility-connect::after {
+    content: "";
+    background-color: transparent;
+    position: absolute;
+    top: 10px;
+    right: 0;
+    width: 100px;
+    height: 20px;
+}
+
+/* CSS cho bảng */
+.breadTable {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    font-size: 1.2rem;
+}
+
+.breadTable th, .breadTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.breadTable th {
+    background-color: var(--primary-color);
+}
+
+.breadTable td {
+    background-color: var(--white-color);
+}
+
+.bread-id, .bread-amount {
+    width: 10%;
+}
+
+.bread-name {
+    width: 25%;
+}
+
+.bread-type, .bread-price{
+    width: 10%;
+}
+
+td.bread-submit{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* CSS cho form */
+.type-bread-form__container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.input-type-bread {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    outline: none;
+}
+
+.submit-type-bread {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+.submit-type-bread:hover {
+    background-color: #0056b3;
+}
+
+/* Icon */
+.fa-magnifying-glass {
+    margin-left: 5px;
+}
+
+/* Add Product */
+.form-add-product__container {
+    margin: 0px auto 20px;
+    width: 70%;
+    font-size: 1.2rem;
+}
+
+.value__table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.value__table th,
+.value__table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.value__table-heading {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+.value__table-input,
+.value__table-select {
+    width: calc(100% - 12px); /* tính toán kích thước để phù hợp với border */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.value__table-select {
+    cursor: pointer;
+}
+
+.submit-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+    margin: 12px 0;
+}
+
+.submit-btn:hover {
+    background-color: #45a049;
+}
+
+.new_amount {
+    outline: none;
+    width: 50px; /* Độ rộng của input */
+    padding: 8px; /* Khoảng cách giữa nội dung và viền của input */
+    border: 1px solid #ccc; /* Viền của input */
+    border-radius: 5px; /* Bo tròn góc của input */
+    box-sizing: border-box; /* Đảm bảo kích thước tính cả padding và border */
+    font-size: 14px; /* Cỡ chữ */
+    line-height: 1.5; /* Độ dày dòng */
+    -moz-appearance: textfield; 
+    text-align: center;
+}
+.new_amount::-webkit-inner-spin-button,
+.new_amount::-webkit-outer-spin-button {
+    -webkit-appearance: none; /* Loại bỏ spinner trong Chrome và Safari */
+    appearance: none;
+}
+
+/* Del-btn */
+.btn-del {
+    background-color: #ff0000; /* Màu nền */
+    color: var(--white-color); /* Màu chữ */
+    border: none; /* Loại bỏ viền */
+    padding: 8px 12px; /* Kích thước đệm */
+    border-radius: 4px; /* Bo góc */
+    cursor: pointer; /* Con trỏ chuột */
+    transition: background-color 0.3s, color 0.3s; /* Hiệu ứng chuyển đổi màu */
+}
+
+.btn-del:hover {
+    background-color: #cc0000; /* Màu nền khi di chuột */
+}

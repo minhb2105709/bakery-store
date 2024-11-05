@@ -1,0 +1,145 @@
+
+
+#user-info__adding,#user-info__viewing{
+    padding: 0 30px;
+    background-color: var(--white-color);
+    width: 100%;
+}
+
+.user-info__header{
+    padding: 18px 0;
+    position: relative;
+}
+
+.user-info__header::before {
+    content: "";
+    border: 1px solid #888888;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+.category{
+    background-color: var(--body-color) !important;
+}
+
+.user-info__heading{
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: 500;
+    line-height: 2rem;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.user-info__title{
+    color: #555;
+    font-size: 1.4rem;
+    margin-top: 10px;
+    margin-bottom: 0;
+}        
+
+.user-info__form-container{
+    padding: 30px 0;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.user-info__form-container::after{
+    content: "";
+    position: absolute;
+    border: 1px solid var(--border-color);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 936px;
+}
+
+
+.user-info__form {
+    display: flex;
+    flex-direction: column  ;
+    /* align-items: center; */
+    justify-content: center;
+}
+
+.user-info__form td{
+    text-align: center;
+    
+}
+
+
+.user-info__form-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 1.6rem;
+    margin-top: 20px;
+}
+
+.user-info__form {
+    width: 100%;
+}
+
+.user-info__form table {
+    width: 100%;
+}
+
+.user-info__form label {
+    font-size: 16px;
+}
+
+.input__data {
+    position: relative;
+}
+
+.input__data input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+.user-add__submit {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.user-add__submit:hover {
+    background-color: #45a049;
+}
+
+/* Personal-view */
+
+
+
+.user-info__form-container th {
+    text-align: right;
+    padding-right: 10px;
+}
+
+.user-info__form-container td {
+    padding-left: 10px;
+}
+
+.user-info__form-container label {
+    font-weight: bold;
+}
+
+.output-data {
+    margin: 5px 0;
+}

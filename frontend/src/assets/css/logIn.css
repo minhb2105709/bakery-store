@@ -1,0 +1,77 @@
+/* .header__utility{
+    display: flex;
+    width: 120px;
+    justify-content: space-between;
+    margin-right: 100px;
+} */
+
+.main{
+    margin-top: 0;
+}
+
+.header__navigation-list{
+    display: flex;
+    justify-content: space-around;
+    list-style-type: none;
+    width: 500px;
+    margin-right: 120px;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+    background-image: url('../image/register_background.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.container__registerForm{
+    display: block;
+    width:500px;
+    border: 1px solid black;
+    border-radius: 6px;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: var(--white-color);
+}
+
+.registerForm__Title{
+    font-size: 18px;
+}
+
+.registerForm__input{
+    margin-top: 10px;
+    width: 460px;
+    height: 30px;
+    padding: 10px;
+    outline: none;
+    border: 1px solid var(--text-color);
+    border-radius: 4px;
+}
+
+.registerForm__button{
+    margin-top: 10px;
+    width: 460px;
+    height: 30px;
+    background-color: var(--dark-orange-color);
+    color: var(--white-color);
+    font-size: 16px;
+    opacity: 1;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.registerForm__button:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.registerForm__redirect-link:hover{
+    color: var(--hover-color);
+}
+
+.registerForm__redirect{
+    margin: 5px auto;
+}

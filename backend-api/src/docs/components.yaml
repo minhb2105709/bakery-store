@@ -1,0 +1,262 @@
+components:
+  schemas:
+    UserUpdateInfo:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The user's new username.
+        email:
+          type: string
+          format: email
+          description: The user's new email address.
+          
+    InvoiceDetails:
+      type: object
+      properties:
+        invoice_ID:
+          type: integer
+          description: The unique identifier for the invoice
+        bread_name:
+          type: string
+          description: The name of the bread product
+        quantity:
+          type: integer
+          description: The quantity of the bread purchased
+        cost:
+          type: number
+          format: float
+          description: The cost of the item
+        invoice_date:
+          type: string
+          format: date
+          description: The date when the invoice was generated
+        status:
+          type: string
+          description: The status of the invoice (e.g., "đã thanh toán")
+
+    SimpleProduct:
+      type: object
+      properties:
+        bread_name:
+          type: string
+          description: The name of the bread/product
+        bread_price:
+          type: number
+          format: float
+          description: The price of the bread/product
+
+    # Schema for detailed product info (for product details)
+    ProductDetails:
+      type: object
+      properties:
+        bread_name:
+          type: string
+          description: The name of the bread/product
+        type_name:
+          type: string
+          description: The type/category of the bread
+        bread_price:
+          type: number
+          format: float
+          description: The price of the bread/product
+        bread_desc:
+          type: string
+          description: A detailed description of the bread/product
+        bread_url:
+          type: string
+          description: The URL of the bread image or resource
+        bread_amount:
+          type: integer
+          description: The available amount of the bread/product in stock
+
+    # Array schema for product list (used by / and /search)
+    ProductList:
+      type: array
+      items:
+        $ref: '#/components/schemas/SimpleProduct'
+
+    # Search results schema (used by /search)
+    ProductSearch:
+      type: object
+      properties:
+        query:
+          type: string
+          description: The search query used to filter products
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimpleProduct'
+
+
+
+# Schema for updating product quantity
+    ProductQuantityUpdate:
+      type: object
+      required: [bread_id, new_quantity]
+      properties:
+        bread_id:
+          type: integer
+          description: The unique identifier of the bread to be updated.
+        new_quantity:
+          type: integer
+          description: The new quantity for the product.
+
+    # Schema for adding a new product
+    NewProduct:
+      type: object
+      required: [type_id, bread_name, bread_price, bread_amount]
+      properties:
+        type_id:
+          type: integer
+          description: The type of bread (category ID).
+        bread_name:
+          type: string
+          description: The name of the bread.
+        bread_price:
+          type: number
+          format: float
+          description: The price of the bread.
+        bread_amount:
+          type: integer
+          description: The available amount of the bread.
+
+    # Schema for deleting a product
+    DeleteProduct:
+      type: object
+      required: [bread_id]
+      properties:
+        bread_id:
+          type: integer
+          description: The unique identifier of the bread to be deleted.
+
+    # Schema for managing user status
+    UserStatusUpdate:
+      type: object
+      required: [user_id, new_status]
+      properties:
+        user_id:
+          type: integer
+          description: The unique identifier of the user.
+        new_status:
+          type: string
+          description: The new status for the user (e.g., active, banned, etc.).
+
+    # Schema for retrieving products by type
+    ProductTypeQuery:
+      type: object
+      required: [typeID]
+      properties:
+        typeID:
+          type: integer
+          description: The ID of the bread type (category) to filter products by.
+    
+    # Schema for adding to the cart
+    AddToCart:
+      type: object
+      required: [userId, bread_id, quantity]
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user adding the product to the cart.
+        bread_id:
+          type: integer
+          description: The ID of the bread to be added.
+        quantity:
+          type: integer
+          description: The quantity of the bread to be added.
+
+    # Schema for updating the cart
+    UpdateCart:
+      type: object
+      required: [userId, bread_id, new_quantity]
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user updating the cart.
+        bread_id:
+          type: integer
+          description: The ID of the bread to be updated.
+        new_quantity:
+          type: integer
+          description: The new quantity of the bread in the cart.
+
+    # Schema for viewing the cart
+    ViewCart:
+      type: object
+      required: [userId]
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user viewing the cart.
+
+    # Schema for deleting a product from the cart
+    DeleteFromCart:
+      type: object
+      required: [userId, bread_id]
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user performing the deletion.
+        bread_id:
+          type: integer
+          description: The ID of the bread to be deleted from the cart.
+
+    # Schema for clearing all products from the cart
+    ClearCart:
+      type: object
+      required: [userId]
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user clearing the cart.
+
+    # Schema for login
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username for login.
+          example: "khucbaominh" # Add example here
+        password:
+          type: string
+          description: The password for login.
+          example: "your_password" # Add example here
+      required:
+        - username
+        - password
+
+    # Schema for register
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username for registration.
+          example: "minh" # Add example here
+        password:
+          type: string
+          description: The password for registration.
+          example: "minh_password" # Add example here
+        userPhone:
+          type: string
+          description: The phone number of the user.
+          example: "0123456789" # Add example here
+      required:
+        - username
+        - password
+        - userPhone
+
+    # Schema for ApiError
+    ApiError:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Status of the response.
+          example: error
+        message:
+          type: string
+          description: Error message.
+          example: Invalid username or password
