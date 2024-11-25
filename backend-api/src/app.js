@@ -7,6 +7,7 @@ const adminRouter = require('./routes/admin.router');
 const customerRouter = require('./routes/customers.router');
 const productRouter = require('./routes/products.router');
 const authRouter = require('./routes/auth.router');
+const dashboardRouter = require('./routes/dashboard.router');
 
 const knex = require('./database/knex');
 // khai báo session
@@ -63,6 +64,7 @@ cartRouter.setup(app);
 adminRouter.setup(app);
 customerRouter.setup(app);
 productRouter.setup(app);
+dashboardRouter.setup(app);
 
 // error handling
 app.use(resourceNotFound);
