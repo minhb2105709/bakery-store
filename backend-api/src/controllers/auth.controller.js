@@ -12,7 +12,7 @@ async function login(req, res, next) {
 
     try {
         const user = await authService.login(username, password);
-
+        
         if (!user) {
             return next(new ApiError(401, 'Invalid username or password'));
         }
@@ -24,11 +24,13 @@ async function login(req, res, next) {
             username: user.user_name,
         };
 
+        console.log('User in session:', req.session.user);
+
         return res.json(
             JSend.success({
                 message: 'Login successful, Hello ' + user.user_name,
                 user: {
-                    id: user.id,
+                    id: user.user_id,
                     name: user.user_name,
                     role: user.user_role,
                 },

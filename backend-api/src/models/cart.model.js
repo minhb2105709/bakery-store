@@ -9,7 +9,7 @@ const cart = {
             .join('invoicedetail as id', 'i.invoice_id', 'id.invoice_id')
             .join('bread as b', 'id.bread_id', 'b.bread_id')
             .join('userinfo as u', 'i.user_id', 'u.user_id')
-            .select('u.user_name', 'b.bread_name', 'id.quantity', 'id.cost');
+            .select('u.user_name', 'b.bread_name', 'id.quantity', 'id.cost', 'i.invoice_id', 'b.bread_url', 'b.bread_price', 'b.bread_id');
     },
 
     // Cập nhật giỏ hàng
@@ -46,7 +46,7 @@ const cart = {
             }
 
             if (currentDetail.quantity === new_quantity) {
-                return { updated: false, message: 'Quantity unchanged' };
+                return {success: false, message: 'Quantity unchanged' };
             }
 
 
@@ -80,12 +80,10 @@ const cart = {
                     .update({
                         'bread_amount': newBreadAmount
                     });
-
-                return updatedRows > 0;
             });
 
-            return { updated: result, message: result ? 'Cart updated successfully' : 'No changes made' };
-
+            return {success: true, message: result ? 'Cart updated successfully' : 'No changes made' };
+            
         } catch (error) {
             console.error('Error updating cart:', error);
             throw error;
@@ -94,64 +92,66 @@ const cart = {
 
     // Xoá sản phẩm khỏi giỏ hàng
     deleteItem: async function (userId, breadId) {
+        let trx = null;
         try {
-            // Lấy giá bánh và số lượng còn lại trong kho
-            const bread = await knex('bread')
+            // Tạo một giao dịch
+            trx = await knex.transaction();
+
+            // Kiểm tra hóa đơn chưa thanh toán của người dùng
+            const invoiceRecord = await trx('invoice')
+                .select('invoice_id')
+                .where({ user_id: userId, status: 'chưa thanh toán' })
+                .first();
+
+            if (!invoiceRecord) {
+                throw new Error('No unpaid invoice found for this user');
+            }
+
+            const invoiceId = invoiceRecord.invoice_id;
+
+            // Kiểm tra sản phẩm trong chi tiết hóa đơn
+            const existingItem = await trx('invoiceDetail')
+                .select('quantity', 'cost')
+                .where({ invoice_ID: invoiceId, bread_id: breadId })
+                .first();
+
+            if (!existingItem) {
+                throw new Error('Product not found in the cart');
+            }
+
+            // Lấy thông tin sản phẩm trong kho
+            const breadData = await trx('bread')
                 .select('bread_amount')
                 .where('bread_id', breadId)
-                .first();
+                .first()
+                .forUpdate();
 
-            if (!bread) {
-                throw new Error('Bread not found');
+            if (!breadData) {
+                throw new Error('Product not found in stock');
             }
 
-            // Lấy số lượng hiện tại từ invoicedetail
-            const currentDetail = await knex('invoicedetail')
-                .join('invoice', 'invoicedetail.invoice_id', '=', 'invoice.invoice_id')
-                .select('invoicedetail.quantity')
-                .where({
-                    'invoice.user_id': userId,
-                    'invoicedetail.bread_id': breadId,
-                    'invoice.status': 'chưa thanh toán'
-                })
-                .first();
+            // Xóa sản phẩm khỏi `invoiceDetail`
+            await trx('invoiceDetail')
+                .where({ invoice_ID: invoiceId, bread_id: breadId })
+                .del();
 
-            if (!currentDetail) {
-                throw new Error('Invoice detail not found');
-            }
+            // Cập nhật lại số lượng sản phẩm trong kho
+            const newBreadAmount = breadData.bread_amount + existingItem.quantity;
+            await trx('bread')
+                .where('bread_id', breadId)
+                .update({ bread_amount: newBreadAmount });
 
-            // Tính số lượng mới của sản phẩm trong kho sau khi xoá khỏi giỏ hàng
-            const newBreadAmount = bread.bread_amount + currentDetail.quantity;
-
-            // Thực hiện xoá invoicedetail và cập nhật lại kho
-            const result = await knex.transaction(async trx => {
-                // Xoá sản phẩm khỏi giỏ hàng
-                const deletedRows = await trx('invoicedetail')
-                    .join('invoice', 'invoicedetail.invoice_id', '=', 'invoice.invoice_id')
-                    .where({
-                        'invoice.user_id': userId,
-                        'invoicedetail.bread_id': breadId,
-                        'invoice.status': 'chưa thanh toán'
-                    })
-                    .del();
-
-                // Cập nhật lại số lượng trong kho
-                await trx('bread')
-                    .where('bread_id', breadId)
-                    .update({
-                        'bread_amount': newBreadAmount
-                    });
-
-                return deletedRows > 0;
-            });
-
-            return { deleted: result, message: result ? 'Product removed from cart and stock updated' : 'No changes made' };
-
+            // Commit giao dịch
+            await trx.commit();
+            return { success: true, message: 'Product removed from cart successfully' };
         } catch (error) {
-            console.error('Error deleting item from cart:', error);
+            console.error('Error deleting product from cart:', error);
+            // Rollback giao dịch nếu có lỗi
+            if (trx) await trx.rollback();
             throw error;
         }
     },
+
 
     deleteAllItems: async function (userId) {
         try {
@@ -197,8 +197,9 @@ const cart = {
         }
     },
 
-    addToCart: async function (userId, breadId) {
-        const amount = 1; // default amount for adding to cart
+    addToCart: async function (userId, breadId, br_amount) {
+        const amount = Number(br_amount); 
+        let trx = null;
         try {
             // Create a transaction instance
             const trx = await knex.transaction();
@@ -215,7 +216,7 @@ const cart = {
                     .insert({ user_ID: userId, invoice_date: knex.fn.now() })
                     .returning('invoice_ID');
 
-                invoiceId = newInvoice[0];  // Extract ID from array
+                invoiceId = newInvoice[0]; // Extract ID from array
             } else {
                 invoiceId = invoiceRecord.invoice_id;
             }
@@ -229,7 +230,8 @@ const cart = {
             const breadPriceData = await trx('bread')
                 .select('bread_price', 'bread_amount')
                 .where('bread_id', breadId)
-                .first();
+                .first()
+                .forUpdate();
 
             if (!breadPriceData || breadPriceData.bread_amount < amount) {
                 await trx.rollback();
@@ -237,8 +239,8 @@ const cart = {
             }
 
             if (existingItem) {
-                // Update quantity and cost for existing item
-                const newQuantity = existingItem.quantity + amount;
+                // Convert existing quantity to a number before adding
+                const newQuantity = Number(existingItem.quantity) + amount;
                 const newCost = breadPriceData.bread_price * newQuantity;
                 await trx('invoiceDetail')
                     .where({ invoice_ID: invoiceId, bread_id: breadId })
@@ -266,6 +268,48 @@ const cart = {
             console.error('Error adding product to cart:', error);
             // Only rollback if trx is defined
             if (trx) await trx.rollback();
+            throw error;
+        }
+    },
+
+    checkout: async function (userId, invoiceId) {
+        let trx = null;
+        try {
+            // Tạo transaction để đảm bảo tính nhất quán của dữ liệu
+            trx = await knex.transaction();
+
+            // Kiểm tra xem invoice có tồn tại và thuộc về user không
+            const invoice = await trx('invoice')
+                .where({
+                    'invoice_id': invoiceId,
+                    'user_id': userId,
+                    'status': 'chưa thanh toán'
+                })
+                .first();
+
+            if (!invoice) {
+                throw new Error('Invoice not found or already paid');
+            }
+
+            // Cập nhật trạng thái của invoice
+            await trx('invoice')
+                .where('invoice_id', invoiceId)
+                .update({
+                    'status': 'đã thanh toán',
+                });
+
+            // Commit transaction
+            await trx.commit();
+
+            return {
+                success: true,
+                message: 'Checkout completed successfully'
+            };
+
+        } catch (error) {
+            // Rollback trong trường hợp có lỗi
+            if (trx) await trx.rollback();
+            console.error('Error during checkout:', error);
             throw error;
         }
     }

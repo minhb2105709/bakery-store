@@ -6,7 +6,7 @@ const authorization = require('../middlewares/authorization');
 const router = express.Router();
 
 module.exports.setup = (app) => {
-    app.use('/customers', authorization.checkAuthorization , router);
+    app.use('/customers' , router);
 
     /**
      * @swagger
@@ -101,7 +101,7 @@ module.exports.setup = (app) => {
      *       - Customers
      *     parameters:
      *       - in: query
-     *         name: id
+     *         name: user_id
      *         required: true
      *         schema:
      *           type: integer
@@ -172,7 +172,99 @@ module.exports.setup = (app) => {
      *                   description: The error message
      *                   example: Internal server error
      */
-    router.get('/order_history/', customersController.getOrderHistory);
+    router.get('/order_history', customersController.getOrderHistory);
+    
+
+    /**
+     * @swagger
+     * /customers/user_info:
+     *   get:
+     *     summary: Get user information
+     *     description: Retrieve detailed information about a user by their ID
+     *     tags:
+     *       - Customers
+     *     parameters:
+     *       - in: query
+     *         name: user_id
+     *         required: true
+     *         schema:
+     *           type: integer
+     *         description: The ID of the user
+     *     responses:
+     *       '200':
+     *         description: User information retrieved successfully
+     *         content: 
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 status:
+     *                   type: string
+     *                   description: The response status
+     *                   enum: [success]
+     *                 data:
+     *                   type: object
+     *                   properties:
+     *                     user:
+     *                       type: object
+     *                       properties:
+     *                         user_id:
+     *                           type: integer
+     *                           description: User's ID
+     *                         username:
+     *                           type: string
+     *                           description: User's username
+     *                         email:
+     *                           type: string
+     *                           description: User's email
+     *                         status:
+     *                           type: string
+     *                           description: User's account status
+     *                         created_at:
+     *                           type: string
+     *                           format: date-time
+     *                           description: Account creation date
+     *       '400':
+     *         description: Bad request - Missing user ID
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 status:
+     *                   type: string
+     *                   example: "error"
+     *                 message:
+     *                   type: string
+     *                   example: "Missing user ID"
+     *       '404':
+     *         description: User not found
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 status:
+     *                   type: string
+     *                   example: "error"
+     *                 message:
+     *                   type: string
+     *                   example: "User not found"
+     *       '500':
+     *         description: Internal server error
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 status:
+     *                   type: string
+     *                   example: "error"
+     *                 message:
+     *                   type: string
+     *                   example: "Error retrieving user information"
+     */
+    router.get('/user_info', customersController.getUserInfo);
 
     //  Method not allowed handlers
     router.all('/update_user_info/', methodNotAllowed);

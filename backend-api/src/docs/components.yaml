@@ -3,9 +3,6 @@ components:
     UserUpdateInfo:
       type: object
       properties:
-        username:
-          type: string
-          description: The user's new username.
         email:
           type: string
           format: email
@@ -105,7 +102,7 @@ components:
     # Schema for adding a new product
     NewProduct:
       type: object
-      required: [type_id, bread_name, bread_price, bread_amount]
+      required: [type_id, bread_name, bread_price, bread_amount, bread_url]
       properties:
         type_id:
           type: integer
@@ -120,6 +117,9 @@ components:
         bread_amount:
           type: integer
           description: The available amount of the bread.
+        bread_url:
+          type: string
+          description: The URL of the bread image or resource.
 
     # Schema for deleting a product
     DeleteProduct:
@@ -193,11 +193,8 @@ components:
     # Schema for deleting a product from the cart
     DeleteFromCart:
       type: object
-      required: [userId, bread_id]
+      required: [bread_id]
       properties:
-        userId:
-          type: integer
-          description: The ID of the user performing the deletion.
         bread_id:
           type: integer
           description: The ID of the bread to be deleted from the cart.

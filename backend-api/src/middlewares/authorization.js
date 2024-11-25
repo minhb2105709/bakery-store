@@ -21,6 +21,8 @@ async function roleCheck (req, res, next) {
 }
 
 async function checkAuthorization (req, res, next) {
+    console.log("Session user:", req.session.user);
+
     if (!req.session.user) {
         return next(new ApiError(403, 'Unauthorized'));
     }

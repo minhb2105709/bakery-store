@@ -6,6 +6,7 @@ const ApiError = require('../api-error');
 async function addToCart(req, res, next) {
     // Lấy thông tin người dùng từ session
     const user = req.session.user;
+    console.log('User data:', user);
 
     // Kiểm tra xem user có trong session không
     if (!user) {
@@ -13,7 +14,7 @@ async function addToCart(req, res, next) {
     }
 
     const userId = user.id;
-    const { bread_id} = req.body;
+    const { bread_id, amount} = req.body;
 
     // Kiểm tra xem bread_id và amount đã được cung cấp chưa
     if (!bread_id) {
@@ -21,10 +22,8 @@ async function addToCart(req, res, next) {
     }
 
     try {
-        // Gọi hàm addToCart trong cart model
-        const result = await cart.addToCart(userId, bread_id);
+        const result = await cart.addToCart(userId, bread_id, amount);
 
-        // Kiểm tra kết quả trả về từ addToCart
         if (result.success) {
             return res.json(JSend.success({ message: 'Product added to cart successfully' }));
         } else {
@@ -42,22 +41,19 @@ async function updateCart(req, res, next) {
     const { userId, bread_id, new_quantity } = req.body;
 
     if (!userId || !bread_id || !new_quantity) {
-        return res.status(400).json({ success: false, message: 'Missing required fields' });
+        return res.status(400).json(JSend.error({ message: 'Missing required fields' }));
     }
 
     try {
         const result = await cart.updateCart(userId, bread_id, new_quantity);
-        if (result.updated) {
-            return res.json({ success: true, message: result.message });
+        if (result.success) {
+            return res.json(JSend.success({ message: 'Product updated successfully' }));
         } else {
-            return res.status(200).json({ success: false, message: result.message });
+            return res.status(404).json(JSend.error({ message: 'Product not found or insufficient stock' }));
         }
     } catch (error) {
-        console.error(error);
-        if (error.message === 'Not enough bread in stock') {
-            return res.status(400).json({ success: false, message: 'Not enough bread in stock' });
-        }
-        return next(new Error('Error updating product quantity'));
+        console.error('Error updating product from cart:', error);
+        return next(new ApiError(500, 'Error when updated product from cart'));
     }
 }
 
@@ -80,7 +76,7 @@ async function deleteProduct(req, res, next) {
 
     try {
         const deleted = await cart.deleteItem(userId, bread_id);
-        if (deleted) {
+        if (deleted.success) {
             return res.json(JSend.success({ message: 'Product deleted successfully' }));
         } else {
             return res.status(404).json(JSend.error({ message: 'Product not found' }));
@@ -117,7 +113,9 @@ async function deleteAllProducts(req, res) {
 
 async function viewCart(req, res, next) {
     // Lấy thông tin người dùng từ session
+
     const user = req.session.user;
+    console.log('User data:', user);
 
     // Kiểm tra xem user có trong session không
     if (!user) {
@@ -140,6 +138,28 @@ async function viewCart(req, res, next) {
     }
 }
 
+async function checkout(req, res, next) {
+    const {userId, invoice_id} = req.body;
+
+    // Kiểm tra xem bread_id và amount đã được cung cấp chưa
+    if (!invoice_id || !userId) {
+        return res.status(400).json(JSend.error({ message: 'Missing required fields' }));
+    }
+
+    try {
+        const result = await cart.checkout(userId, invoice_id);
+
+        if (result.success) {
+            return res.json(JSend.success({ message: 'Checkout completed successfully' }));
+        } else {
+            return res.status(404).json(JSend.error({ message: 'Checkout failed' }));
+        }
+    } catch (error) {
+        console.error('Error during checkout:', error);
+        return next(new ApiError(500, 'Error during checkout'));
+    }
+}
+
 
 module.exports = {
     addToCart,
@@ -147,4 +167,5 @@ module.exports = {
     deleteProduct,
     deleteAllProducts,
     viewCart,
+    checkout,
 };

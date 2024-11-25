@@ -40,37 +40,87 @@ async function viewTypeProduct(req, res, next) {
     }
 }
 
-async function addNewProduct(req, res, next) {
-    const body = req.body;
-    const type_id = body.type_id;
-    const bread_name = body.bread_name;
-    const bread_price = body.bread_price;
-    const bread_amount = body.bread_amount;
+async function getType(req, res, next) {
+    try {
+        const Types = await admin.getTypes(); // Sử dụng hàm getAllUsers từ admin model
+        if (!Types || Types.length === 0) {
+            return res.status(404).json(JSend.error({ message: 'No Types found' }));
+        }
+        return res.json(JSend.success({ Types }));
+    } catch (error) {
+        console.log(error);
+        return next(new ApiError(500, 'Error retrieving Types'));
+    }
+}
 
-    // Kiểm tra các trường bắt buộc
+async function addNewProduct(req, res, next) {
+    const { type_id, bread_name, bread_price, bread_amount } = req.body;
+
+    // Check for required fields
     if (!type_id || !bread_name || !bread_price || !bread_amount) {
         return res.status(400).json(JSend.error({ message: 'Missing required fields' }));
     }
 
-    // Tạo dữ liệu sản phẩm mới
-    const data = { type_id, bread_name, bread_price, bread_amount };
+    console.log(req.file);
+    // Ensure that a file was uploaded
+    if (!req.file) {
+        return res.status(400).json(JSend.error({ message: 'Image file is required' }));
+    }
 
+    // Get the uploaded file's path
+    const bread_url = `/uploads/${req.file.filename}`;
+
+    // Create the new product data
+    const data = { type_id, bread_name, bread_price, bread_amount, bread_url };
+    console.log(data);
     try {
-        // Gọi hàm thêm sản phẩm vào cơ sở dữ liệu
+        // Insert the new product into the database
         const addBread = await admin.addNewProduct(data);
 
         if (!addBread) {
             return res.status(500).json(JSend.error({ message: 'Something went wrong during the product insertion' }));
         }
 
-        // Trả về sản phẩm vừa được thêm
+        // Return the added product
         return res.json(JSend.success({ addBread }));
     } catch (error) {
         console.log(error);
-        // Xử lý lỗi khi có vấn đề trong quá trình thêm sản phẩm
+        // Handle errors during product insertion
         return next(new ApiError(500, 'Error adding product'));
     }
 }
+
+// cập nhật số lượng sản phẩm
+async function updateProductImage(req, res, next) {
+    const { bread_id} = req.body;
+
+    console.log(req.file);
+    // Ensure that a file was uploaded
+    if (!req.file) {
+        return res.status(400).json(JSend.error({ message: 'Image file is required' }));
+    }
+
+    // Get the uploaded file's path
+    const bread_url = `/uploads/${req.file.filename}`;
+
+    if (!bread_id || !bread_url) {
+        return res.status(400).json(JSend.error({ message: 'Missing required fields' }));
+    }
+
+    try {
+        // Cập nhật số lượng sản phẩm trong bảng `bread`
+        const updated = await admin.updateProductImage(bread_id, bread_url);
+        if (updated) {
+            return res.json(JSend.success({ message: 'image updated successfully' }));
+        } else {
+            return res.status(404).json(JSend.error({ message: 'Product not found' }));
+        }
+    } catch (error) {
+        console.error(error);
+        return next(new ApiError(500, 'Error updating product image'));
+    }
+}
+
 
 // cập nhật số lượng sản phẩm
 async function updateProductQuantity(req, res, next) {
@@ -94,6 +144,28 @@ async function updateProductQuantity(req, res, next) {
     }
 }
 
+// cập nhật số lượng sản phẩm
+async function updateProductPrice(req, res, next) {
+    const { bread_id, new_price } = req.body;
+
+    if (!bread_id || !new_price) {
+        return res.status(400).json(JSend.error({ message: 'Missing required fields' }));
+    }
+
+    try {
+        // Cập nhật số lượng sản phẩm trong bảng `bread`
+        const updated = await admin.updateProductPrice(bread_id, new_price);
+        if (updated) {
+            return res.json(JSend.success({ message: 'Price updated successfully' }));
+        } else {
+            return res.status(404).json(JSend.error({ message: 'Product not found' }));
+        }
+    } catch (error) {
+        console.error(error);
+        return next(new ApiError(500, 'Error updating product price'));
+    }
+}
+
 
 async function deleteProduct(req, res, next) {
     const { bread_id } = req.body;
@@ -111,7 +183,7 @@ async function deleteProduct(req, res, next) {
         }
     } catch (error) {
         console.error(error);
-        return next(new ApiError(500, 'Error updating product quantity'));
+        return next(new ApiError(500, 'Error deleting product'));
     }
 
 }
@@ -163,4 +235,7 @@ module.exports = {
     viewAllProduct,
     viewAllUser,
     viewTypeProduct,
+    getType,
+    updateProductPrice,
+    updateProductImage,
 };

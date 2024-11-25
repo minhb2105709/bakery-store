@@ -11,7 +11,14 @@ const admin = {
     // Láy tất cả sản phẩm có trong Kho hãng
     getAllProducts: function () {
         return knex('bread')
-            .select('bread_id', 'bread_name', 'bread_price', 'bread_desc', 'bread_url', 'bread_amount')
+            .join('breadType', 'breadType.type_id', 'bread.type_id')
+            .select('bread_id', 'type_name', 'bread_name', 'bread_price', 'bread_amount', 'bread_url');
+    },
+
+    // Lấy loại sản phẩm
+    getTypes: function () {
+        return knex('breadType')
+            .select('type_id', 'type_name');
     },
 
     // Lấy sản phẩm theo loại
@@ -28,7 +35,8 @@ const admin = {
             type_id: data.type_id,
             bread_name: data.bread_name,
             bread_price: data.bread_price,
-            bread_amount: data.bread_amount
+            bread_amount: data.bread_amount,
+            bread_url: data.bread_url
         });
     },
 
@@ -38,6 +46,24 @@ const admin = {
             .where('bread_id', bread_id)
             .update({
                 bread_amount: new_quantity
+            });
+    },
+
+    // Cập nhật số lượng còn lại trong Kho hàng
+    updateProductPrice: function (bread_id, new_price) {
+        return knex('bread')
+            .where('bread_id', bread_id)
+            .update({
+                bread_price: new_price
+            });
+    },
+
+    // Cập nhật hình ảnh sản phẩm
+    updateProductImage: function (bread_id, bread_url) {
+        return knex('bread')
+            .where('bread_id', bread_id)
+            .update({
+                bread_url: bread_url
             });
     },
 

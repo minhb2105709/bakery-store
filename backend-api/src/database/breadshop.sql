@@ -58,7 +58,7 @@ create table invoice(
     status varchar(255) default 'chưa thanh toán',
     CONSTRAINT FOREIGN KEY (user_id) REFERENCES userinfo(user_id) on delete cascade
 );
-
+select * from bread;
 select u.user_name, b.bread_name, id.quantity, id.cost from invoice i
 join invoicedetail id on i.invoice_ID = id.invoice_ID
 join bread b on id.bread_id = b.bread_id
@@ -75,10 +75,17 @@ WHERE i.user_ID = 3 and status = 'chưa thanh toán';
     primary key (invoice_ID,bread_id)
 );
 
+
 select * from invoice;
 select * from invoiceDetail id
 join invoice i on id.invoice_ID = i.invoice_ID
 where user_id = 3 and status = 'chưa thanh toán';
+select * from bread;
+
+select * from invoiceDetail;
+update invoiceDetail set status_item = 'đã thanh toán'
+where bread_id in (3, 14);
+
 
 
 select * from `bread` where bread_id = 13;

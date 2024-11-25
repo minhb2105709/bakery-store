@@ -4,7 +4,92 @@ const { methodNotAllowed } = require('../controllers/errors.controller');
 
 const router = express.Router();
 
-// Thêm sản phẩm vào giỏ hàng (POST /api/v1/cart/:productId)
+// Thêm sản phẩm vào giỏ hàng (POST /api/v1/cart/addToCart)
+/**
+ * @swagger
+ * /api/v1/cart/addToCart:
+ *   post:
+ *     summary: Add product to shopping cart
+ *     description: Add a bread product to the user's shopping cart. Creates a new invoice if none exists, or adds to existing unpaid invoice.
+ *     tags:
+ *       - Cart
+ *     security:
+ *       - sessionAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bread_id:
+ *                 type: integer
+ *                 description: The ID of the bread product to add to cart.
+ *                 example: 1
+ *               amount:
+ *                 type: integer
+ *                 description: The quantity of bread to add to cart.
+ *                 example: 2
+ *             required:
+ *               - bread_id
+ *               - amount
+ *     responses:
+ *       '200':
+ *         description: Product successfully added to cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: "Product added to cart successfully"
+ *       '400':
+ *         description: Bad request - Missing fields or user not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "Missing required fields" 
+ *       '404':
+ *         description: Product not found or insufficient stock
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "Product not found or insufficient stock"
+ *       '500':
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "Error when adding product to cart"
+ */
 router.post('/addToCart', cartController.addToCart);
 
 // Cập nhật giỏ hàng (PUT /api/v1/cart/updateQuantity)
@@ -171,7 +256,7 @@ router.delete('/deleteProduct', cartController.deleteProduct);
  */
 router.delete('/deleteAll', cartController.deleteAllProducts);
 
-
+router.put('/checkout', cartController.checkout);
 
 // Xem giỏ hàng (GET /api/v1/cart)
 /**

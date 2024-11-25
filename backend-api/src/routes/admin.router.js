@@ -2,6 +2,7 @@ const express = require('express');
 const adminController = require('../controllers/admin.controller');
 const { methodNotAllowed } = require('../controllers/errors.controller');
 const authorization = require('../middlewares/authorization');
+const imageUpload = require('../middlewares/imageUpload.middleware');
 
 const router = express.Router();
 // Products
@@ -54,25 +55,36 @@ router.get('/bread/', adminController.viewTypeProduct);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/NewProduct'
+ *             type: object
+ *             properties:
+ *               type_id:
+ *                 type: integer
+ *                 description: The type of bread (category ID).
+ *               bread_name:
+ *                 type: string
+ *                 description: The name of the bread.
+ *               bread_price:
+ *                 type: number
+ *                 format: float
+ *                 description: The price of the bread.
+ *               bread_amount:
+ *                 type: integer
+ *                 description: The available amount of the bread.
+ *               bread_url:
+ *                 type: string
+ *                 format: binary
+ *                 description: The image file of the bread.
  *     responses:
  *       '200':
  *         description: Product successfully added
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 product:
- *                   $ref: '#/components/schemas/NewProduct'
  *       '400':
  *         description: Missing required fields
  *       '500':
  *         description: Server error
  */
-router.post('/addBread', adminController.addNewProduct);
+router.post('/addBread', imageUpload, adminController.addNewProduct);
 
 // Cập nhật Kho hàng (PUT /api/v1/admin/:productId)
 /**
@@ -100,6 +112,110 @@ router.post('/addBread', adminController.addNewProduct);
  *         description: Server error
  */
 router.put('/updateAmount', adminController.updateProductQuantity);
+
+/**
+ * @swagger
+ * /api/v1/admin/updatePrice:
+ *   put:
+ *     summary: Update product price
+ *     description: Update the price of an existing bread product in the inventory.
+ *     tags:
+ *       - Admin
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bread_id:
+ *                 type: integer
+ *                 description: The ID of the bread product to update.
+ *               new_price:
+ *                 type: number
+ *                 format: float
+ *                 description: The new price for the bread product.
+ *             required:
+ *               - bread_id
+ *               - new_price
+ *     responses:
+ *       '200':
+ *         description: Price updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: "Price updated successfully"
+ *       '400':
+ *         description: Missing required fields
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Server error
+ */
+router.put('/updatePrice', adminController.updateProductPrice);
+
+/**
+ * @swagger
+ * /api/v1/admin/updateImage:
+ *   put:
+ *     summary: Update product image
+ *     description: Update the image of an existing bread product in the inventory.
+ *     tags:
+ *       - Admin
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               bread_id:
+ *                 type: integer
+ *                 description: The ID of the bread product to update.
+ *               bread_url:
+ *                 type: string
+ *                 format: binary
+ *                 description: The new image file for the bread product.
+ *             required:
+ *               - bread_id
+ *               - bread_url
+ *     responses:
+ *       '200':
+ *         description: Image updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: "Image updated successfully"
+ *       '400':
+ *         description: Missing required fields or image file
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Server error
+ */
+router.put('/updateImage', imageUpload, adminController.updateProductImage);
+
+
 
 
 // Xóa sản phẩm khỏi Kho hàng (DELETE /api/v1/admin/:productId)
@@ -236,6 +352,10 @@ router.get('/viewUser', adminController.viewAllUser);
  *                   example: "An error occurred while updating the user status."
  */
 router.put('/manageUser', adminController.manageUser);
+
+router.get('/Type', adminController.getType);
+
+
 router.get('/', (req, res) => {
     res.send('Welcome to the Admin Page');
 });
@@ -244,6 +364,6 @@ router.get('/', (req, res) => {
 router.all('/', methodNotAllowed);
 
 module.exports.setup = (app) => {
-    app.use('/api/v1/admin', authorization.checkAuthorization, router);
+    app.use('/api/v1/admin', router);
 };
 
