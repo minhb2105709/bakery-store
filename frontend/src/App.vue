@@ -1,30 +1,27 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import AppHeader from '@/components/AppHeader.vue';
-import LoginHeader from '@/components/LoginHeader.vue';
+import AppFooter from '@/components/AppFooter.vue';
 
 const route = useRoute();
-
-// Check if the current route is the login page
-const isLoginPage = computed(() => route.path === '/login');
-
-// Set the header component based on the route
-const headerComponent = computed(() => (isLoginPage.value ? LoginHeader : AppHeader));
 </script>
 
 <template>
-  <!-- Render the selected header component -->
-  <component :is="headerComponent" />
+  <router-view />
 
-  <div class="container-fluid">
-    <router-view />
-  </div>
+  <AppFooter />
 </template>
 
 <style>
   .page {
     max-width: 400px;
     margin: auto;
+  }
+
+  #app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #f9f9f9;
   }
 </style>

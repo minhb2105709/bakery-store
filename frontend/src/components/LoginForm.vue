@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router';
 import authService from '@/services/auth.service';
 import { useUserStore } from '@/stores/user.store'; // Import userStore
 
+import Swal from 'sweetalert2'
+
+
 const router = useRouter();
 const userStore = useUserStore(); // Sử dụng userStore
 const username = ref('');
@@ -15,10 +18,11 @@ const handleSubmit = async () => {
         // Đăng nhập qua authService
         const response = await authService.login(username.value, password.value);
         console.log(response);
+        console.log(response.id);
         //localStorage.setItem('userId', response.user.id);
         localStorage.setItem('userName', response.name);
         localStorage.setItem('userRole', response.role);
-
+        localStorage.setItem('userId', response.id);
         
         // Cập nhật trạng thái người dùng trong store
         userStore.checkUserStatus(); // Cập nhật trạng thái đăng nhập từ localStorage
@@ -26,15 +30,47 @@ const handleSubmit = async () => {
         
         // Chuyển hướng dựa trên role từ userStore
         if (userStore.isAdmin) {
-            alert('Đăng nhập thành công');
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: `Welcome Back! ${response.name}`
+            });
             router.push('/admin');  // Nếu là admin, chuyển hướng đến trang admin
         } else {
-            alert('Đăng nhập thành công');
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "success",
+                title: `Welcome Back! ${response.name}`
+            });
             router.push('/'); // Nếu không phải admin, chuyển hướng về trang chủ
         }
     } catch (error) {
         errorMessage.value = error.message || 'Tên đăng nhập hoặc mật khẩu không đúng';
-        alert(errorMessage.value);
+        Swal.fire({
+                icon: "error",
+                title: "Login Failed",
+                text: `${errorMessage.value}`,
+        });
     }
 }
 </script>
@@ -43,7 +79,7 @@ const handleSubmit = async () => {
     <div class="container__registerForm">
         <form class="registerForm" @submit.prevent="handleSubmit">
             <div class="mb-3">
-                <h3 class="registerForm__Title text-dark">Đăng Nhập</h3>
+                <h3 class="registerForm__Title text-dark">Sign In</h3>
                 
                 <label for="Username" class="form-label fw-bold">Username</label>
                 <input 
@@ -51,7 +87,7 @@ const handleSubmit = async () => {
                     id="Username"
                     class="registerForm__input form-control" 
                     v-model="username"
-                    placeholder="Tên tài khoản" 
+                    placeholder="username" 
                     required
                     autocomplete="username"
                 >
@@ -64,7 +100,7 @@ const handleSubmit = async () => {
                     id="password"
                     class="registerForm__input form-control" 
                     v-model="password"
-                    placeholder="Mật Khẩu" 
+                    placeholder="password" 
                     required
                     autocomplete="current-password"
                 >
@@ -74,14 +110,14 @@ const handleSubmit = async () => {
             
             <div class="mb-2">
                 <button type="submit" class="registerForm__button btn btn-primary">
-                    Đăng Nhập
+                    Sign In
                 </button>
             </div>
             
             <p class="registerForm__redirect">
-                Bạn chưa có tài khoản? 
+                You don't have any accounts yet? 
                 <RouterLink to="/register" class="registerForm__redirect-link">
-                    Đăng Ký
+                    Sign Up
                 </RouterLink>
             </p>
         </form>
@@ -89,9 +125,9 @@ const handleSubmit = async () => {
 </template>
 
 <style scoped>
-#app {
+/*#app {
     background-image: url(../assets/image/register_background.jpg);
-}
+}*/
 
 .container__registerForm {
     display: flex;

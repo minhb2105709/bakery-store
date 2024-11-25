@@ -1,13 +1,12 @@
 <script setup>
-// import LoginHeader from '@/components/LoginHeader.vue'
 import LoginForm from '@/components/LoginForm.vue'
+import LoginHeader from '@/components/LoginHeader.vue';
 </script>
 
 <template>
   <div class="main">
-    <!-- <LoginHeader /> -->
-    
-    <div class="container mt-4">
+    <LoginHeader />
+    <div class="container-fluid mt-4">
       <LoginForm />
     </div>
 

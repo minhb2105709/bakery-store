@@ -1,8 +1,13 @@
+<script setup>
+import AppHeader from '@/components/AppHeader.vue';
+</script>
+
 <template>
+    <AppHeader/>
     <div class="container">
         <div class="container__box">
             <div class="container__contact">
-                <h2 class="container__contact-title">ĐỊA CHỈ:</h2>
+                <h2 class="container__contact-title">ADDRESS:</h2>
                 <p class="container__contact-content">103A Hẻm 51, Huỳnh Cương, Phường An Cư, Quận Ninh Kiều, TP. Cần Thơ</p>
 
                 <h2 class="container__contact-title">EMAIL:</h2>
@@ -10,16 +15,16 @@
             </div>
 
             <div class="container__contact">
-                <h2 class="container__contact-title">SỐ ĐIỆN THOẠI:</h2>
+                <h2 class="container__contact-title">PHONE NUMBER:</h2>
                 <p class="container__contact-content">028 353 58888 (08h00 - 17h00);</p>
                 <p class="container__contact-content">028 353 58936 (07h00 - 22h00)</p>
 
-                <h2 class="container__contact-title">THEO DÕI CHÚNG TÔI:</h2>
-                <ul class="social-links">
-                    <li><a href="https://www.facebook.com/" class="container__contact-link"><i class="fa-brands fa-facebook"></i></a></li>
-                    <li><a href="https://twitter.com/" class="container__contact-link"><i class="fa-brands fa-twitter"></i></a></li>
-                    <li><a href="https://www.youtube.com/" class="container__contact-link"><i class="fa-brands fa-youtube"></i></a></li>
-                    <li><a href="https://www.instagram.com/" class="container__contact-link"><i class="fa-brands fa-instagram"></i></a></li>
+                <h2 class="container__contact-title">FOLLOW US:</h2>
+                <ul class="social-links d-inline-flex " style="list-style-type: none;">
+                    <li class="contact-items"><a href="https://www.facebook.com/" class="container__contact-link"><i class="fa-brands fa-facebook"></i></a></li>
+                    <li class="contact-items"><a href="https://twitter.com/" class="container__contact-link"><i class="fa-brands fa-twitter"></i></a></li>
+                    <li class="contact-items"><a href="https://www.youtube.com/" class="container__contact-link"><i class="fa-brands fa-youtube"></i></a></li>
+                    <li class="contact-items"><a href="https://www.instagram.com/" class="container__contact-link"><i class="fa-brands fa-instagram"></i></a></li>
                 </ul>
             </div>
         </div>
@@ -40,3 +45,15 @@
 </template>
 
 <style src="../assets/css/contact.css"></style>
+
+<style scoped>
+.contact-items{
+    margin-right: 10px;
+}
+
+.container__contact{
+    background-color: #fff;
+    border-radius: 8px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+</style>

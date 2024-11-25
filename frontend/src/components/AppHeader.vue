@@ -1,6 +1,6 @@
 <template>
     <header class="header">
-        <div class="grid navbar">
+        <div class="grid navbar container">
             <div class="headerbar container-fluid">
                 <!-- Logo -->
                 <div class="header__logo navbar-brand">
@@ -24,7 +24,7 @@
                                 to="/"
                                 class="header__navigation-link nav-link"
                             >
-                                TRANG CHỦ
+                                HOMEPAGE
                             </router-link>
                         </li>
                         <li class="header__navigation-item nav-item">
@@ -32,7 +32,7 @@
                                 to="/introduction"
                                 class="header__navigation-link nav-link"
                             >
-                                GIỚI THIỆU
+                                INTRODUCTION
                             </router-link>
                         </li>
                         <li class="header__navigation-item nav-item">
@@ -40,7 +40,7 @@
                                 to="/contact"
                                 class="header__navigation-link nav-link"
                             >
-                                LIÊN HỆ
+                                CONTACT US
                             </router-link>
                         </li>
                     </ul>
@@ -48,24 +48,49 @@
 
                 <!-- Search and Cart -->
                 <div class="header__utility d-flex align-items-center">
-                    <form
-                        @submit.prevent="handleSearch"
-                        class="header__utility-search"
-                    >
+                    <div class="header__utility-search position-relative">
                         <input
                             type="text"
                             v-model="searchQuery"
                             class="header__search-input"
-                            placeholder="Nhập để tìm kiếm sản phẩm"
-                            @keyup="searchProducts"
+                            placeholder="Search for products..."
+                            @input="searchProducts"
+                            @keyup.enter="handleSearch"
                         />
-                        <button
-                            class="header__search-btn"
-                            type="submit"
+                        <button 
+                            class="header__search-btn" 
+                            type="button"
+                            @click="handleSearch"
                         >
                             <i class="header__search-btn-icon fa-solid fa-magnifying-glass"></i>
                         </button>
-                    </form>
+                        
+                        <!-- Search Results Dropdown -->
+                        <div 
+                            v-if="showResults && searchResults.length > 0" 
+                            class="search-results-dropdown"
+                        >
+                        
+                        <!-- Search Results Dropdown -->
+                        
+                            <div 
+                                v-for="product in searchResults" 
+                                :key="product.bread_id"
+                                class="search-result-item"
+                                @click="goToProduct(product)"
+                            >
+                            <img 
+                                :src="product.bread_url" 
+                                :alt="product.bread_name" 
+                                class="search-result-image"
+                            />
+                                <div class="search-result-info">
+                                    <div class="search-result-name">{{ product.bread_name }}</div>
+                                    <div class="search-result-price">${{ product.bread_price }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="header__utility-cart ms-3">
                         <router-link
                             to="/cart"
@@ -87,7 +112,7 @@
                                 to="/login"
                                 class="header__utility-link nav-link"
                             >
-                                ĐĂNG NHẬP
+                                Sign In
                             </router-link>
                         </li>
                         <li class="header__utility-item nav-item">
@@ -95,7 +120,7 @@
                                 to="/register"
                                 class="header__utility-link nav-link"
                             >
-                                ĐĂNG KÝ
+                                Sign Up
                             </router-link>
                         </li>
                     </ul>
@@ -133,7 +158,7 @@
                                         class="user__ability-link"
                                     >
                                         <i class="fas fa-user mr-2"></i>
-                                        Hồ Sơ Của Tôi
+                                        My Profile
                                     </router-link>
                                 </li>
                                 <li class="user__ability-item">
@@ -142,7 +167,7 @@
                                         class="user__ability-link  "
                                     >
                                         <i class="fas fa-shopping-cart mr-2"></i>
-                                        Đơn Mua
+                                        Shopping Cart
                                     </router-link>
                                 </li>
                                 <li class="user__ability-item">
@@ -152,64 +177,91 @@
                                         @click.prevent="handleLogout"
                                     >
                                         <i class="fas fa-sign-out-alt mr-2"></i>
-                                        Đăng Xuất
+                                        Log Out
                                     </a>
                                 </li>
                             </ul>
                         </div>
                     </div>
+                </div>
             </div>
         </div>
-    </div>
     </header>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'; // Thêm ref vào import
+import { ref, onMounted } from 'vue';
 import auth from '@/services/auth.service';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user.store';
+import makeProductsService from '@/services/products.service';
 
 export default {
-  name: 'AppHeader',
-  setup() {
+name: 'AppHeader',
+setup() {
     const searchQuery = ref('');
+    const searchResults = ref([]);
+    const showResults = ref(false); // Thêm biến showResults
     const router = useRouter();
     const userStore = useUserStore();
 
     onMounted(() => {
-      // Kiểm tra trạng thái đăng nhập khi component được mount
-      userStore.checkUserStatus(); // Gọi hàm từ Pinia store
+        userStore.checkUserStatus();
     });
     
     const handleLogout = async () => {
-      try {
-        await auth.logout();
-        router.push('/login');
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
+        try {
+            await auth.logout();
+            router.push('/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
+
+    const searchProducts = async () => {
+        if (searchQuery.value.trim() === '') {
+            searchResults.value = [];
+            showResults.value = false; // Ẩn kết quả khi input rỗng
+            return;
+        }
+
+        try {
+            const data = await makeProductsService.searchProducts(searchQuery.value);
+            searchResults.value = data.products || [];
+            showResults.value = true; // Hiển thị kết quả khi có dữ liệu
+        } catch (error) {
+            console.error('Error searching products:', error);
+            searchResults.value = [];
+            showResults.value = false;
+        } 
+    };
+
+    const goToProduct = (product) => {
+        router.push(`/detail/${product.bread_id}`);
+        searchResults.value = [];
+        searchQuery.value = '';
+        showResults.value = false;
     };
 
     const handleSearch = () => {
-      // Xử lý tìm kiếm
-      console.log(`Searching for: ${searchQuery.value}`);
-      // Có thể thêm logic tìm kiếm ở đây
-    };
-
-    const searchProducts = () => {
-      // Xử lý tìm kiếm theo thời gian thực nếu cần
-      console.log(`Searching for: ${searchQuery.value}`);
+        if (searchQuery.value.trim()) {
+            router.push(`/search?q=${encodeURIComponent(searchQuery.value.trim())}`);
+            searchQuery.value = '';
+            showResults.value = false;
+        }
     };
 
     return {
-      userStore, // Trả về userStore để truy cập trạng thái
-      handleLogout,
-      searchQuery,
-      handleSearch,
-      searchProducts
+        userStore,
+        handleLogout,
+        searchQuery,
+        searchResults, // Return searchResults
+        showResults,  // Return showResults
+        handleSearch,
+        searchProducts,
+        goToProduct
     };
-  }
+}
 };
 </script>
 
@@ -356,8 +408,12 @@ export default {
     opacity: 0.8;
 }
 
-.user__ability-link:hover{
+.user__ability-link:hover {
     opacity: 1;
+    color: #f67514;
+}
+
+.header__navigation-link:hover{
     color: #f67514;
 }
 
@@ -365,6 +421,126 @@ export default {
     border: 1px solid var(--border-color);
 }
 
+/* Search input and button styles */
+.header__utility-search {
+    position: relative;
+    z-index: 1001; /* Ensure dropdown appears above other elements */
+}
+
+.header__search-input {
+    padding: 8px 35px 8px 15px; /* Increased padding for search icon */
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    width: 250px;
+    transition: all 0.3s ease;
+}
+
+.header__search-input:focus {
+    outline: none;
+    border-color: #f67514;
+    box-shadow: 0 0 5px rgba(246, 117, 20, 0.2);
+}
+
+.header__search-btn {
+    background: transparent;
+    border: none;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+}
+
+.header__search-btn:hover {
+    color: #f67514;
+}
+
+/* Search Results Dropdown */
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+    background-color: #f5f5f5;
+}
+
+.search-result-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 12px;
+}
+
+.search-result-info {
+    flex: 1;
+}
+
+.search-result-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.search-result-price {
+    font-size: 13px;
+    color: #f67514;
+    font-weight: 600;
+}
+
+/* Scrollbar styles for the dropdown */
+.search-results-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Empty state */
+.search-results-empty {
+    padding: 15px;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Loading state */
+.search-results-loading {
+    padding: 15px;
+    text-align: center;
+    color: #666;
+}
 
 /*Cart*/
 

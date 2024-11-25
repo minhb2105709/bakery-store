@@ -169,6 +169,7 @@ import { ref, onMounted } from 'vue'; // Thêm ref vào import
 import auth from '@/services/auth.service';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user.store';
+import Swal from 'sweetalert2'
 
 export default {
   name: 'AppHeader',
@@ -183,12 +184,33 @@ export default {
     });
     
     const handleLogout = async () => {
-      try {
-        await auth.logout();
-        router.push('/login');
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
+        try {
+            await auth.logout();
+            const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+                    icon: "success",
+                    title: `Goodbye! See you later!`
+                });
+            router.push('/login');
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Something went wrong!",
+            });
+            console.error('Logout failed:', error);
+
+        }
     };
 
     const handleSearch = () => {

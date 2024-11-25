@@ -1,5 +1,5 @@
 .container{
-    background-image: url('../image/register_background.jpg');
+    /* background-image: url('../image/register_background.jpg'); */
     background-size: cover;
     background-position: center; 
 }
@@ -13,7 +13,6 @@
     flex-direction: column;
     align-items: center;
     margin-bottom: 30px;
-    margin-top: 87px;
     padding-top: 30px;
 }
 

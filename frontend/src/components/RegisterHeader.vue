@@ -15,7 +15,7 @@
                     </ul>
                 </nav>
                 <div class="header__utility nav">
-                    <router-link class="header__utility-link nav-link" to="/register">Sign Up</router-link>
+                    <router-link class="header__utility-link nav-link" to="/login">Sign In</router-link>
                 </div>
             </div>
         </div>

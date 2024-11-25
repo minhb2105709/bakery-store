@@ -1,3 +1,5 @@
+import { useUserStore } from '@/stores/user.store';
+
 /**
 * Enhanced fetch utility for API requests
 * @param {string} url
@@ -50,7 +52,7 @@ function authenticateService() {
     }
 
     async function register(username, password, userPhone) {
-        const response = await efetch(`${baseUrl}/register`, {
+        const response = await efetch(`${apiURL}/${baseUrl}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -62,13 +64,14 @@ function authenticateService() {
     }
 
     async function logout() {
+        const userStore = useUserStore();
         try {
-            await efetch(`${baseUrl}/logout`, {
+            await efetch(`${apiURL}/${baseUrl}/logout`, {
                 method: 'POST'
             });
         } finally {
             // Xóa thông tin user khỏi localStorage khi đăng xuất
-            localStorage.removeItem('user');
+            userStore.logout();
         }
     }
 

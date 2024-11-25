@@ -28,8 +28,8 @@ export default defineConfig({
           });
         }
       },
-      '/public': {
-        target: 'http://localhost:3000',
+      '/uploads/': {
+        target: 'http://localhost:3000/public',
         changeOrigin: true,
         secure: false
       }
