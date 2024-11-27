@@ -1,33 +1,34 @@
 <template>
-    <h2 class="text-center mb-3">-- Delete Products --</h2>
-    <div class="ml-5">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(product, index) in products" :key="product.bread_id">
-                    <th scope="row">{{ index + 1 }}</th>
-                    <td>{{ product.type_name }}</td>
-                    <td>{{ product.bread_name }}</td>
-                    <td>{{ formatPrice(product.bread_price) }}</td>
-                    <td>{{ product.bread_amount }}</td>
-                    <td>
-                        <button class="btn btn-danger" @click="deleteProduct(index)">
-                            Delete 
-                            <i class="fa fa-trash-o delete-icon" aria-hidden="true"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="container my-3">
+        <h2 class="text-center mb-4">Manage Products</h2>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(product, index) in products" :key="product.bread_id">
+                        <th scope="row">{{ index + 1 }}</th>
+                        <td>{{ product.type_name }}</td>
+                        <td>{{ product.bread_name }}</td>
+                        <td>{{ formatPrice(product.bread_price) }}</td>
+                        <td>{{ product.bread_amount }}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" @click="deleteProduct(index)">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -91,6 +92,28 @@ async function deleteProduct(index) {
 </script>
 
 <style scoped>
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 0.5rem;
+}
+
+.table thead tr:first-child th:first-child {
+    border-top-left-radius: 0.5rem;
+}
+
+.table thead tr:first-child th:last-child {
+    border-top-right-radius: 0.5rem;
+}
+
+.table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 0.5rem;
+}
+
+.table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 0.5rem;
+}
+
 .table .edit-button {
     background: none;
     border: none;

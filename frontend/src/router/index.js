@@ -42,6 +42,10 @@ const routes = [
         component: () => import('@/views/Admin.vue'),
         children: [
             {
+                path: '',
+                redirect: '/admin/view-products'
+            },
+            {
                 path: 'view-products',
                 component: AdminViewBread,
             },

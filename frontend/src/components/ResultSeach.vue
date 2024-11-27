@@ -1,7 +1,7 @@
 <template>
   <div class="product-list">
-    <h4 class="search-title text-primary d-inline-block">Search Results for: </h4> <span>{{ searchQuery }}</span>
-    <hr>
+    <h4 class="search-title text-primary d-inline-block">Search Results For: </h4> <h4 class="search-query">"{{ searchQuery }}"</h4>
+    <hr class="search-divider">
     <div class="grid">
       <div v-if="loading" class="product-list__loading">
         Loading...
@@ -313,5 +313,59 @@ export default {
   padding: 40px;
   font-size: 18px;
   color: #666;
+}
+
+.search-title {
+  margin: 20px 0;
+  color: #333;
+  font-size: 24px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.search-title::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #f67514;
+  transition: width 0.3s ease;
+}
+
+.search-title:hover::before {
+  width: 100%;
+}
+
+.search-query {
+  color: #f67514;
+  font-weight: bold;
+  position: relative;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.search-query::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #f67514;
+  transition: width 0.3s ease;
+}
+
+.search-query:hover::after {
+  width: 100%;
+}
+
+.search-divider {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, #f67514 0%, transparent 100%);
+  margin: 15px 0;
+  opacity: 0.7;
 }
 </style>

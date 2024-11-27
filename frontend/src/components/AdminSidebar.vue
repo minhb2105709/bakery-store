@@ -81,7 +81,7 @@ function toggleExpand(event) {
               </ul>
           </li>
 
-          <li class="sidebar-item">
+          <!-- <li class="sidebar-item">
             <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
             data-bs-target="#dashboard" aria-expanded="false" aria-controls="dashboard"
             @click.prevent>
@@ -96,7 +96,7 @@ function toggleExpand(event) {
                   <a href="#" class="sidebar-link">Manage User</a>
                 </li>
               </ul>
-          </li>
+          </li> -->
         </ul>
       </div>
     </aside>

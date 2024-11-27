@@ -1,65 +1,75 @@
 <template>
-    <h2 class="text-center mb-3">-- Update Products --</h2>
-    <div class="ml-5">
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Image</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(product, index) in products" :key="product.id">
-                    <th scope="row">{{ index + 1 }}</th>
-                    <td>
-                        <div class="data-container">
-                            {{ product.type_name }}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="data-container">
-                            {{ product.bread_name }} 
-                        </div>
-                    </td>
-                    <td>
-                        <div class="data-container">
-                            <span class="data">
-                                {{ formatPrice(product.bread_price) }}
-                            </span>
-                            <button class="edit-button" @click="editField(index, 'price')">
-                                <i class="fa-regular fa-pen-to-square"></i>
-                            </button>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="data-container">
-                            <div class="data">
-                                {{ product.bread_amount }}
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Update Products</h2>
+        <div class="table-responsive">
+            <table class="table table-hover table-rounded table-bordered">
+                <colgroup>
+                    <col style="width: 5%;" />
+                    <col style="width: 10%;" />
+                    <col style="width: 22%;" />
+                    <col style="width: 15%;" />
+                    <col style="width: 13%;" />
+                    <col style="width: 15%;" />
+                </colgroup>
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" class="align-middle">#</th>
+                        <th scope="col" class="text-start align-middle">Type</th>
+                        <th scope="col" class="text-start align-middle">Name</th>
+                        <th scope="col" class="align-middle">Price</th>
+                        <th scope="col" class="align-middle">Amount</th>
+                        <th scope="col" class="align-middle">Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(product, index) in products" :key="product.id">
+                        <th scope="row" class="align-middle">{{ index + 1 }}</th>
+                        <td class="text-start align-middle">{{ product.type_name }}</td>
+                        <td class="text-start align-middle">{{ product.bread_name }}</td>
+                        <td class="align-middle">
+                            <div class="edit-container">
+                                <span class="edit-text">{{ formatPrice(product.bread_price) }}</span>
+                                <button class="btn btn-sm btn-primary edit-btn ml-5" @click="editField(index, 'price')">
+                                    <i class="fa-solid fa-dollar-sign"></i>
+                                </button>
                             </div>
-                            <button class="edit-button" @click="editField(index, 'amount')">
-                                <i class="fa-regular fa-pen-to-square"></i>
-                            </button>
-                        </div>
-                        
-                    </td>
-
-                    <td class="url-cell">
-                        <div class="data-container">
-                            <div class="data">
-                                {{ product.bread_url }}
+                        </td>
+                        <td class="align-middle">
+                            <div class="edit-container">
+                                <span class="edit-text">{{ product.bread_amount }}</span>
+                                <button class="btn btn-sm btn-primary edit-btn" @click="editField(index, 'amount')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
                             </div>
-                            <button class="edit-button" @click="updateImage(index, 'image')">
-                                <i class="fa-regular fa-pen-to-square"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        </td>
+                        <td class="align-middle">
+                            <div class="edit-container">
+                                <div class="image-container">
+                                    <img
+                                        v-if="product.bread_url"
+                                        :src="product.bread_url"
+                                        alt="Product Image"
+                                        class="img-fluid img-thumbnail"
+                                        style="max-width: 80px; max-height: 80px;"
+                                    />
+                                    <span
+                                        v-else
+                                        class="text-truncate"
+                                        :title="product.bread_url"
+                                        style="max-width: 100px;"
+                                    >
+                                        {{ product.bread_url }}
+                                    </span>
+                                </div>
+                                <button class="btn btn-sm btn-primary edit-btn" @click="updateImage(index, 'image')">
+                                    <i class="fa-regular fa-image"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -68,26 +78,23 @@ import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import adminService from '@/services/admin.service';
 
-
 const products = ref([]);
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 };
 
-// Fetch products on mount
+// Rest of the script remains the same as in the original file
 onMounted(async () => {
     try {
         const response = await adminService.viewAllProducts();
         console.log("Fetched products:", response.Products);
         products.value = response.Products;
-
     } catch (error) {
         console.error("Failed to fetch products:", error.message);
     }
 });
 
-// Function to edit price or amount
 async function editField(index, field) {
     const currentValue = field === 'price' ? products.value[index].bread_price : products.value[index].bread_amount;
     const { value: newValue } = await Swal.fire({
@@ -97,7 +104,7 @@ async function editField(index, field) {
         inputValue: currentValue,
         showCancelButton: true,
         inputValidator: (value) => {
-            if (!value || isNaN(value) || value <= 0) {
+            if (!value || isNaN(value) || value < 0) {
                 return 'Please enter a valid number greater than 0!';
             }
         }
@@ -128,8 +135,8 @@ async function editField(index, field) {
 }
 
 async function updateImage(index, field) {
+    // Same implementation as original file
     if (field === 'image') {
-        // Sử dụng SweetAlert để chọn ảnh
         const { value: file } = await Swal.fire({
             title: "Select image",
             input: "file",
@@ -140,7 +147,6 @@ async function updateImage(index, field) {
         });
 
         if (file) {
-            // Hiển thị ảnh đã chọn trước khi upload
             const reader = new FileReader();
             reader.onload = (e) => {
                 Swal.fire({
@@ -152,11 +158,8 @@ async function updateImage(index, field) {
             reader.readAsDataURL(file);
 
             try {
-                // Tạo FormData và gửi yêu cầu update ảnh
                 await adminService.updateProductImage(products.value[index].bread_id, file);
                 Swal.fire("Image updated successfully");
-
-                // Cập nhật URL hình ảnh trong dữ liệu sản phẩm
                 products.value[index].bread_url = URL.createObjectURL(file);
             } catch (error) {
                 Swal.fire("Error", `Failed to update image: ${error.message}`, "error");
@@ -167,52 +170,48 @@ async function updateImage(index, field) {
 </script>
 
 <style scoped>
-
-.table td {
-    text-align: center;
+.table.table-hover.table-rounded {
+    border-radius: 0.5rem !important;
+    overflow: hidden;
 }
 
-.table .data-container {
+.edit-container {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
 }
 
-.table .edit-button {
-    background: none;
-    border: none;
-    padding: 12px;
-    margin: 0;
-    color: inherit;
-    cursor: pointer;
-    font-size: 1rem;
+.edit-text {
+    text-align: left;
+    flex-grow: 1;
+    margin-right: 10px;
 }
 
-.table .edit-button i {
-    font-size: 0.75rem;
+.edit-btn {
+    flex-shrink: 0;
 }
 
-.table .data{
-    width: 30% !important;
-    display: inline-block;
-    overflow: hidden;
+.image-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-grow: 1;
+    margin-right: 10px;
 }
 
-.url-cell{
-    max-width: 100px; 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.table td {
+    vertical-align: middle;
+    padding: 8px;
 }
 
-/* Ẩn dấu mũi tên trong input type="number" */
+/* Remaining styles from the original file */
 input[type="number"] {
-    -moz-appearance: textfield; /* Firefox */
-    -webkit-appearance: none;  /* Chrome, Safari, Opera */
-    appearance: none;          /* Standard syntax */
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-/* Đối với các trình duyệt hỗ trợ điều chỉnh chiều cao input */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
